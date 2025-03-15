@@ -1,12 +1,12 @@
+// _app.tsx or app/layout.tsx (depending on your Next.js version)
 import { AppProps } from 'next/app';
-import { SessionContextProvider } from '@supabase/auth-helpers-react';
-import { supabase } from '../../../utils/supabaseClient';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <SessionContextProvider supabaseClient={supabase}>
+    <AuthProvider>
       <Component {...pageProps} />
-    </SessionContextProvider>
+    </AuthProvider>
   );
 }
 

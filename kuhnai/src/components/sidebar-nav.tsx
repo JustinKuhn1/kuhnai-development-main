@@ -5,15 +5,18 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Logo } from './ui/logo';
 import { Button } from './ui/button';
-import { Home, Globe, Sparkles, Book, X } from 'lucide-react';
+import { Home, Globe, Sparkles, Book, X, LogOut } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface SidebarNavProps {
   isOpen: boolean;
   onClose: () => void;
+  onShowAuthModal?: () => void;
 }
 
-export function SidebarNav({ isOpen, onClose }: SidebarNavProps) {
+export function SidebarNav({ isOpen, onClose, onShowAuthModal }: SidebarNavProps) {
   const pathname = usePathname();
+  const { user, loading, signOut } = useAuth();
 
   const navItems = [
     {
@@ -37,6 +40,18 @@ export function SidebarNav({ isOpen, onClose }: SidebarNavProps) {
       icon: Book
     }
   ];
+
+  const handleSignOut = async () => {
+    await signOut();
+    onClose();
+  };
+
+  const handleAuthButtonClick = () => {
+    if (onShowAuthModal) {
+      onShowAuthModal();
+      onClose();
+    }
+  };
 
   return (
     <>
@@ -102,18 +117,42 @@ export function SidebarNav({ isOpen, onClose }: SidebarNavProps) {
         </nav>
 
         <div className="mt-auto space-y-2">
-          <Button
-            variant="default"
-            className="w-full bg-[#2A6B74] hover:bg-[#215760]"
-          >
-            Sign Up
-          </Button>
-          <Button
-            variant="outline"
-            className="w-full"
-          >
-            Log in
-          </Button>
+          {loading ? (
+            <div className="text-center text-sm text-zinc-500 py-2">Loading...</div>
+          ) : user ? (
+            <>
+              {/* User is signed in */}
+              <div className="mb-2 px-3 py-2 bg-zinc-100 rounded-md">
+                <div className="text-sm font-medium truncate">{user.email}</div>
+              </div>
+              <Button
+                variant="outline"
+                className="w-full flex items-center gap-2"
+                onClick={handleSignOut}
+              >
+                <LogOut size={16} />
+                <span>Sign Out</span>
+              </Button>
+            </>
+          ) : (
+            <>
+              {/* User is not signed in */}
+              <Button
+                variant="default"
+                className="w-full bg-[#2A6B74] hover:bg-[#215760]"
+                onClick={handleAuthButtonClick}
+              >
+                Sign Up
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={handleAuthButtonClick}
+              >
+                Log in
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </>

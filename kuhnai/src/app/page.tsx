@@ -1,4 +1,3 @@
-// filepath: c:\Users\ryank\Downloads\kuhnai-development-main\kuhnai\src\app\page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -11,6 +10,8 @@ import TestimonialsSection from '@/components/testimonials-section';
 import CTASection from '@/components/cta-section';
 import Footer from '@/components/footer';
 import AuthModal from '@/components/AuthModal';
+import { useAuth } from '../contexts/AuthContext';
+import Head from 'next/head';
 
 // Add custom animation keyframes
 const floatAnimation = `
@@ -30,6 +31,11 @@ const floatAnimation = `
 export default function Home() {
   const [isMounted, setIsMounted] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const { refreshSession } = useAuth();
+
+  const handleAuthSuccess = async () => {
+    await refreshSession();
+  };
 
   // Set mounted state to true once component mounts
   useEffect(() => {
@@ -58,27 +64,39 @@ export default function Home() {
   }, [isMounted]);
 
   return (
-    <main className="min-h-screen overflow-x-hidden">
-      {/* Navbar */}
-      <AnimatedNavbar onLoginClick={() => setIsAuthModalOpen(true)} />
+    <div>
+      <Head>
+        <title>KuhnAI</title>
+        <meta name="description" content="KuhnAI provides AI solutions for business process automation and optimization." />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
 
-      {/* Hero Section */}
-      <HeroSection />
+      <main className="min-h-screen overflow-x-hidden">
+        {/* Navbar */}
+        <AnimatedNavbar onLoginClick={() => setIsAuthModalOpen(true)} />
 
-      {/* Features Section */}
-      <FeaturesSection />
+        {/* Hero Section */}
+        <HeroSection />
 
-      {/* Testimonials Section */}
-      <TestimonialsSection />
+        {/* Features Section */}
+        <FeaturesSection />
 
-      {/* Call to Action Section */}
-      <CTASection />
+        {/* Testimonials Section */}
+        <TestimonialsSection />
 
-      {/* Footer */}
-      <Footer />
+        {/* Call to Action Section */}
+        <CTASection />
 
-      {/* Auth Modal */}
-      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
-    </main>
+        {/* Footer */}
+        <Footer />
+
+        {/* Auth Modal */}
+        <AuthModal 
+          isOpen={isAuthModalOpen} 
+          onClose={() => setIsAuthModalOpen(false)} 
+          onAuthSuccess={handleAuthSuccess}
+        />
+      </main>
+    </div>
   );
 }

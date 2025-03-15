@@ -7,9 +7,10 @@ import { Button } from './ui/button';
 
 interface LayoutWithSidebarProps {
   children: React.ReactNode;
+  onShowAuthModal?: () => void;
 }
 
-export function LayoutWithSidebar({ children }: LayoutWithSidebarProps) {
+export function LayoutWithSidebar({ children, onShowAuthModal }: LayoutWithSidebarProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -31,7 +32,11 @@ export function LayoutWithSidebar({ children }: LayoutWithSidebarProps) {
       </div>
       
       {/* Sidebar - hidden on mobile by default, shown when toggled */}
-      <SidebarNav isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <SidebarNav 
+        isOpen={sidebarOpen} 
+        onClose={() => setSidebarOpen(false)} 
+        onShowAuthModal={onShowAuthModal}
+      />
       
       {/* Main content - full width on mobile, with margin on desktop */}
       <div className="min-h-screen lg:ml-[220px]">

@@ -1,20 +1,22 @@
 import { useState } from 'react';
-import { supabase } from '../../utils/supabaseClient';
-import { EyeIcon, EyeOffIcon, Loader2 } from 'lucide-react';
+import { EyeIcon, EyeOffIcon, Loader2, Github, Mail } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onAuthSuccess?: () => void;
 }
 
-const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
+const AuthModal = ({ isOpen, onClose, onAuthSuccess }: AuthModalProps) => {
+  const { signIn, signUp, resetPassword, socialSignIn } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [resetPassword, setResetPassword] = useState(false);
+  const [isResetPassword, setIsResetPassword] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
   const handleLogin = async () => {
@@ -27,11 +29,14 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
     setError('');
     
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error, user } = await signIn(email, password);
       if (error) setError(error.message);
       else {
         setSuccessMessage('Login successful!');
-        setTimeout(() => onClose(), 1000);
+        setTimeout(() => {
+          onClose();
+          if (onAuthSuccess) onAuthSuccess();
+        }, 1000);
       }
     } catch (err) {
       setError('An unexpected error occurred');
@@ -55,11 +60,14 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
     setError('');
     
     try {
-      const { error } = await supabase.auth.signUp({ email, password });
+      const { error, user } = await signUp(email, password);
       if (error) setError(error.message);
       else {
         setSuccessMessage('Check your email to confirm your account!');
-        setTimeout(() => setMode('login'), 3000);
+        setTimeout(() => {
+          setMode('login');
+          if (onAuthSuccess) onAuthSuccess();
+        }, 3000);
       }
     } catch (err) {
       setError('An unexpected error occurred');
@@ -78,14 +86,12 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
     setError('');
     
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
+      const { error } = await resetPassword(email);
       
       if (error) setError(error.message);
       else {
         setSuccessMessage('Password reset email sent!');
-        setTimeout(() => setResetPassword(false), 3000);
+        setTimeout(() => setIsResetPassword(false), 3000);
       }
     } catch (err) {
       setError('An unexpected error occurred');
@@ -99,7 +105,7 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
     setError('');
     
     try {
-      const { error } = await supabase.auth.signInWithOAuth({ provider });
+      const { error } = await socialSignIn(provider);
       if (error) setError(error.message);
     } catch (err) {
       setError('An unexpected error occurred');
@@ -113,7 +119,7 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white p-8 rounded-lg shadow-xl max-w-md w-full relative">
-        {resetPassword ? (
+        {isResetPassword ? (
           <>
             <h2 className="text-2xl font-semibold mb-6 text-center">Reset Password</h2>
             <p className="mb-4 text-gray-600 text-sm">Enter your email address and we'll send you instructions to reset your password.</p>
@@ -140,7 +146,7 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
               </button>
               
               <button 
-                onClick={() => setResetPassword(false)}
+                onClick={() => setIsResetPassword(false)}
                 className="w-full text-gray-500 text-sm text-center hover:text-kuhn-teal"
               >
                 Back to login
@@ -205,7 +211,7 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
               {mode === 'login' && (
                 <div className="text-right">
                   <button
-                    onClick={() => { setResetPassword(true); setError(''); }}
+                    onClick={() => { setIsResetPassword(true); setError(''); }}
                     className="text-sm text-kuhn-teal hover:underline"
                   >
                     Forgot password?
@@ -229,20 +235,20 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
               </div>
               
               <button
-                onClick={() => handleSocialLogin('google')}
-                className="bg-white border border-gray-300 text-gray-700 p-2 rounded w-full font-medium hover:bg-gray-100 transition-colors flex items-center justify-center"
-              >
-                <img src="/icons/google.svg" alt="Google" className="h-5 w-5 mr-2" />
-                Continue with Google
-              </button>
-              
-              <button
-                onClick={() => handleSocialLogin('github')}
-                className="bg-white border border-gray-300 text-gray-700 p-2 rounded w-full font-medium hover:bg-gray-100 transition-colors flex items-center justify-center"
-              >
-                <img src="/icons/github.svg" alt="GitHub" className="h-5 w-5 mr-2" />
-                Continue with GitHub
-              </button>
+  onClick={() => handleSocialLogin('google')}
+  className="bg-white border border-gray-300 text-gray-700 p-2 rounded w-full font-medium hover:bg-gray-100 transition-colors flex items-center justify-center"
+>
+  <Mail size={18} className="mr-2" />
+  Continue with Google
+</button>
+
+<button
+  onClick={() => handleSocialLogin('github')}
+  className="bg-white border border-gray-300 text-gray-700 p-2 rounded w-full font-medium hover:bg-gray-100 transition-colors flex items-center justify-center"
+>
+  <Github size={18} className="mr-2" />
+  Continue with GitHub
+</button>
             </div>
           </>
         )}

@@ -1,11 +1,12 @@
-// filepath: c:\Users\ryank\Downloads\kuhnai-development-main\kuhnai\src\components\animated-navbar.tsx
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import { Logo } from './ui/logo';
 import { Button } from './ui/button';
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X, ChevronDown, LogOut, User } from 'lucide-react';
+import { supabase } from '../../utils/supabaseClient';
+import { Session, User as SupabaseUser } from '@supabase/supabase-js';
 
 const navItems = [
   { name: 'Solutions', href: '#solutions', subItems: [
@@ -32,11 +33,30 @@ export default function AnimatedNavbar({ onLoginClick }: AnimatedNavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const pathname = usePathname();
 
   // Set mounted state on client-side
   useEffect(() => {
     setIsMounted(true);
+    
+    // Check if user is logged in
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    
+    getUser();
+    
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user || null);
+    });
+    
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   // Handle scroll events to change navbar appearance
@@ -59,6 +79,24 @@ export default function AnimatedNavbar({ onLoginClick }: AnimatedNavbarProps) {
 
   const handleDropdownToggle = (name: string) => {
     setOpenDropdown(openDropdown === name ? null : name);
+  };
+  
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setUserMenuOpen(false);
+  };
+
+  const getUserDisplayName = () => {
+    if (!user) return null;
+    
+    if (user.user_metadata?.full_name) {
+      return user.user_metadata.full_name;
+    } else if (user.user_metadata?.name) {
+      return user.user_metadata.name;
+    } else {
+      // Fallback to email, but only show the part before @
+      return user.email?.split('@')[0] || 'User';
+    }
   };
 
   const navbarVariants = {
@@ -184,14 +222,61 @@ export default function AnimatedNavbar({ onLoginClick }: AnimatedNavbarProps) {
             ))}
 
             <div className="ml-4 flex items-center space-x-3">
-              <Button
-                variant={isScrolled ? "outline" : "secondary"}
-                size="sm"
-                className={isScrolled ? "" : "bg-white/20 text-white hover:bg-white/30 border-white/30"}
-                onClick={onLoginClick}
-              >
-                Log in
-              </Button>
+              {user ? (
+                <div className="relative">
+                  <button 
+                    onClick={() => setUserMenuOpen(!userMenuOpen)}
+                    className={`flex items-center space-x-2 px-3 py-1 rounded-md text-sm font-medium ${
+                      isScrolled 
+                        ? 'text-zinc-800 hover:bg-zinc-100' 
+                        : 'text-white hover:bg-white/20'
+                    }`}
+                  >
+                    <User size={16} />
+                    <span>{getUserDisplayName()}</span>
+                    <ChevronDown size={14} />
+                  </button>
+                  
+                  <AnimatePresence>
+                    {userMenuOpen && (
+                      <motion.div
+                        initial="closed"
+                        animate="open"
+                        exit="closed"
+                        variants={dropdownVariants}
+                        className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-lg overflow-hidden"
+                      >
+                        <div className="py-2">
+                          <Link 
+                            href="/profile" 
+                            className="flex items-center px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-100"
+                            onClick={() => setUserMenuOpen(false)}
+                          >
+                            <User size={14} className="mr-2" />
+                            Profile
+                          </Link>
+                          <button
+                            onClick={handleLogout}
+                            className="flex items-center w-full text-left px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-100"
+                          >
+                            <LogOut size={14} className="mr-2" />
+                            Log out
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ) : (
+                <Button
+                  variant={isScrolled ? "outline" : "secondary"}
+                  size="sm"
+                  className={isScrolled ? "" : "bg-white/20 text-white hover:bg-white/30 border-white/30"}
+                  onClick={onLoginClick}
+                >
+                  Log in
+                </Button>
+              )}
               <Button
                 size="sm"
                 className={`${
@@ -229,6 +314,34 @@ export default function AnimatedNavbar({ onLoginClick }: AnimatedNavbarProps) {
             className="fixed inset-0 z-40 bg-white pt-20 pb-6 px-4 md:hidden"
           >
             <nav className="flex flex-col space-y-4">
+              {user && (
+                <div className="border-b border-zinc-100 pb-4 mb-2">
+                  <div className="flex items-center space-x-2 mb-4">
+                    <div className="bg-[#2A6B74] text-white p-2 rounded-full">
+                      <User size={18} />
+                    </div>
+                    <div>
+                      <p className="font-medium">{getUserDisplayName()}</p>
+                      <p className="text-sm text-zinc-500">{user.email}</p>
+                    </div>
+                  </div>
+                  <Link
+                    href="/profile"
+                    className="block py-2 text-zinc-600"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Profile
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center py-2 text-zinc-600"
+                  >
+                    <LogOut size={14} className="mr-2" />
+                    Log out
+                  </button>
+                </div>
+              )}
+              
               {navItems.map((item) => (
                 <div key={item.name} className="border-b border-zinc-100 pb-4">
                   {item.subItems ? (
@@ -279,16 +392,21 @@ export default function AnimatedNavbar({ onLoginClick }: AnimatedNavbarProps) {
                 </div>
               ))}
 
-              <div className="pt-4 flex flex-col space-y-3">
-                <Button variant="outline" className="w-full" onClick={onLoginClick}>
-                  Log in
-                </Button>
-                <Button className="w-full bg-[#2A6B74] hover:bg-[#215760]">
-                  Request Demo
-                </Button>
-              </div>
+              {!user && (
+                <div className="pt-4 flex flex-col space-y-3">
+                  <Button variant="outline" className="w-full" onClick={() => {
+                    onLoginClick();
+                    setMobileMenuOpen(false);
+                  }}>
+                    Log in
+                  </Button>
+                </div>
+              )}
+              <Button className="w-full bg-[#2A6B74] hover:bg-[#215760]">
+                Request Demo
+              </Button>
             </nav>
-          </motion.div>
+            </motion.div>
         )}
       </AnimatePresence>
     </>
