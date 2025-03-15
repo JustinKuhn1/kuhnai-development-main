@@ -2,7 +2,6 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  distDir: process.env.NODE_ENV === "production" ? "build" : ".next",
   images: {
     domains: [
       "source.unsplash.com",
@@ -31,5 +30,3 @@ const nextConfig: NextConfig = {
     ],
   },
 };
-
-export default nextConfig;
