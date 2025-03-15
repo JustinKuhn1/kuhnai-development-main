@@ -1,3 +1,4 @@
+// filepath: c:\Users\ryank\Downloads\kuhnai-development-main\kuhnai\src\app\page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -9,6 +10,7 @@ import FeaturesSection from '@/components/features-section';
 import TestimonialsSection from '@/components/testimonials-section';
 import CTASection from '@/components/cta-section';
 import Footer from '@/components/footer';
+import AuthModal from '@/components/AuthModal';
 
 // Add custom animation keyframes
 const floatAnimation = `
@@ -27,6 +29,7 @@ const floatAnimation = `
 
 export default function Home() {
   const [isMounted, setIsMounted] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   // Set mounted state to true once component mounts
   useEffect(() => {
@@ -57,7 +60,7 @@ export default function Home() {
   return (
     <main className="min-h-screen overflow-x-hidden">
       {/* Navbar */}
-      <AnimatedNavbar />
+      <AnimatedNavbar onLoginClick={() => setIsAuthModalOpen(true)} />
 
       {/* Hero Section */}
       <HeroSection />
@@ -73,6 +76,9 @@ export default function Home() {
 
       {/* Footer */}
       <Footer />
+
+      {/* Auth Modal */}
+      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
     </main>
   );
 }

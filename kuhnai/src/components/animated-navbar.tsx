@@ -1,3 +1,4 @@
+// filepath: c:\Users\ryank\Downloads\kuhnai-development-main\kuhnai\src\components\animated-navbar.tsx
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -22,7 +23,11 @@ const navItems = [
   { name: 'About', href: '/about' },
 ];
 
-export default function AnimatedNavbar() {
+interface AnimatedNavbarProps {
+  onLoginClick: () => void;
+}
+
+export default function AnimatedNavbar({ onLoginClick }: AnimatedNavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -183,6 +188,7 @@ export default function AnimatedNavbar() {
                 variant={isScrolled ? "outline" : "secondary"}
                 size="sm"
                 className={isScrolled ? "" : "bg-white/20 text-white hover:bg-white/30 border-white/30"}
+                onClick={onLoginClick}
               >
                 Log in
               </Button>
@@ -274,7 +280,7 @@ export default function AnimatedNavbar() {
               ))}
 
               <div className="pt-4 flex flex-col space-y-3">
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full" onClick={onLoginClick}>
                   Log in
                 </Button>
                 <Button className="w-full bg-[#2A6B74] hover:bg-[#215760]">
