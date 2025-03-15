@@ -3,6 +3,11 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import ClientBody from "./ClientBody";
 
+// Add this meta tag for theme-color
+const themeColorMetaTag = (
+  <meta name="theme-color" content="#000000" />
+);
+
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
