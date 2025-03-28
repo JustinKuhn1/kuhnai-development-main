@@ -157,6 +157,17 @@ export default function AnimatedNavbar({ onLoginClick }: AnimatedNavbarProps) {
     }
   };
 
+  // Add new color logic methods
+  const getLogoColor = () => {
+    if (mobileMenuOpen) return 'default';
+    return isScrolled ? 'default' : 'white';
+  };
+
+  const getIconColor = () => {
+    if (mobileMenuOpen) return 'text-zinc-800';
+    return isScrolled ? 'text-zinc-800' : 'text-white';
+  };
+
   return (
     <>
       <motion.header
@@ -168,9 +179,9 @@ export default function AnimatedNavbar({ onLoginClick }: AnimatedNavbarProps) {
         } ${isInitialLoad ? 'opacity-0' : 'opacity-100'}`}
       >
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          {/* Logo with subtle background when not scrolled */}
+          {/* Logo with consistent color handling */}
           <div className={`${isScrolled || mobileMenuOpen ? '' : 'rounded-lg px-2 py-1 bg-white/10 backdrop-blur-sm'}`}>
-            <Logo size="md" color={(isScrolled || mobileMenuOpen) ? 'default' : 'white'} />
+            <Logo size="md" color={getLogoColor()} />
           </div>
 
           {/* Desktop Navigation */}
@@ -294,16 +305,16 @@ export default function AnimatedNavbar({ onLoginClick }: AnimatedNavbarProps) {
             </div>
           </nav>
 
-          {/* Mobile menu button with background when not scrolled */}
+          {/* Mobile menu button with consistent color handling */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className={`md:hidden ${isScrolled || mobileMenuOpen ? '' : 'rounded-full p-2 bg-white/10 backdrop-blur-sm'}`}
             aria-label="Toggle mobile menu"
           >
             {mobileMenuOpen ? (
-              <X size={24} className={(isScrolled || mobileMenuOpen) ? "text-zinc-800" : "text-white"} />
+              <X size={24} className={getIconColor()} />
             ) : (
-              <Menu size={24} className={(isScrolled || mobileMenuOpen) ? "text-zinc-800" : "text-white"} />
+              <Menu size={24} className={getIconColor()} />
             )}
           </button>
         </div>
@@ -412,7 +423,7 @@ export default function AnimatedNavbar({ onLoginClick }: AnimatedNavbarProps) {
                 Request Demo
               </Button>
             </nav>
-            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </>
