@@ -24,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable}`}>
       <head>
-      <meta name="theme-color" content="#000000" /> {/* Add the theme-color meta tag here */}
+      <meta name="theme-color" content="#000000" />
       </head>
       <ClientBody>
         {children}

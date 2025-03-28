@@ -33,6 +33,7 @@ export default function AnimatedNavbar({ onLoginClick }: AnimatedNavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const pathname = usePathname();
@@ -40,6 +41,10 @@ export default function AnimatedNavbar({ onLoginClick }: AnimatedNavbarProps) {
   // Set mounted state on client-side
   useEffect(() => {
     setIsMounted(true);
+    // Add a small delay to prevent the flash
+    const timer = setTimeout(() => {
+      setIsInitialLoad(false);
+    }, 100);
     
     // Check if user is logged in
     const getUser = async () => {
@@ -56,6 +61,7 @@ export default function AnimatedNavbar({ onLoginClick }: AnimatedNavbarProps) {
     
     return () => {
       subscription.unsubscribe();
+      clearTimeout(timer);
     };
   }, []);
 
@@ -159,7 +165,7 @@ export default function AnimatedNavbar({ onLoginClick }: AnimatedNavbarProps) {
         variants={navbarVariants}
         className={`fixed top-0 left-0 right-0 z-50 px-4 py-3 transition-all duration-300 ${
           isScrolled || mobileMenuOpen ? 'bg-white/95 backdrop-blur-md shadow-sm' : 'bg-transparent'
-        }`}
+        } ${isInitialLoad ? 'opacity-0' : 'opacity-100'}`}
       >
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           {/* Logo with subtle background when not scrolled */}
