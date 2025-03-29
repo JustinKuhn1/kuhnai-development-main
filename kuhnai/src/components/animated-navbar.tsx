@@ -174,9 +174,11 @@ export default function AnimatedNavbar({ onLoginClick }: AnimatedNavbarProps) {
         initial="hidden"
         animate="visible"
         variants={navbarVariants}
-        className={`fixed top-0 left-0 right-0 z-50 px-4 py-3 transition-all duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-50 px-4 py-3 ${
           isScrolled || mobileMenuOpen ? 'bg-white/95 backdrop-blur-md shadow-sm' : 'bg-transparent'
-        } ${isInitialLoad ? 'opacity-0' : 'opacity-100'}`}
+        } transition-colors duration-300 ${
+          isInitialLoad ? 'hidden' : 'block'
+        }`}
       >
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           {/* Logo with consistent color handling */}
