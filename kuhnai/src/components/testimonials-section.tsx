@@ -10,7 +10,7 @@ const testimonials = [
     name: 'Sarah Johnson',
     position: 'CFO',
     company: 'Axion Healthcare',
-    image: 'https://randomuser.me/api/portraits/women/32.jpg',
+    image: '/woman1.png',
     quote: "KuhnAI's financial analytics tools completely transformed how we manage our operations budget. We've reduced processing times by 65% and improved accuracy significantly.",
     rating: 5
   },
@@ -19,7 +19,7 @@ const testimonials = [
     name: 'Michael Chen',
     position: 'Operations Director',
     company: 'NexTech Solutions',
-    image: 'https://randomuser.me/api/portraits/men/42.jpg',
+    image: '/man1.png',
     quote: "Implementing KuhnAI's process automation platform has been a game-changer for our supply chain operations. We've streamlined workflows and reduced operational costs by 28%.",
     rating: 5
   },
@@ -28,7 +28,7 @@ const testimonials = [
     name: 'Amelia Rodriguez',
     position: 'HR Manager',
     company: 'Global Innovations',
-    image: 'https://randomuser.me/api/portraits/women/45.jpg',
+    image: '/woman2.png',
     quote: "The HR analytics suite from KuhnAI has transformed our talent management approach. It's like having a strategic advisor that helps us make better people decisions daily.",
     rating: 4
   },
@@ -37,7 +37,7 @@ const testimonials = [
     name: 'David Patel',
     position: 'CTO',
     company: 'VentureCraft',
-    image: 'https://randomuser.me/api/portraits/men/22.jpg',
+    image: '/man2.png',
     quote: "We've integrated KuhnAI's solutions across our entire tech infrastructure. The seamless implementation and tangible ROI have made this our best strategic investment to date.",
     rating: 5
   }

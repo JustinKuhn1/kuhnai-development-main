@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
+import '../styles/globals.css'; // Ensure this file exists and contains your Tailwind or global styles
 
 export default function Custom404() {
   const router = useRouter()
