@@ -28,9 +28,10 @@ const navItems = [
 
 interface AnimatedNavbarProps {
   onLoginClick: () => void;
+  isProfilePage?: boolean; // Add the new optional prop
 }
 
-export default function AnimatedNavbar({ onLoginClick }: AnimatedNavbarProps) {
+export default function AnimatedNavbar({ onLoginClick, isProfilePage }: AnimatedNavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -177,7 +178,7 @@ export default function AnimatedNavbar({ onLoginClick }: AnimatedNavbarProps) {
         animate="visible"
         variants={navbarVariants}
         className={`fixed top-0 left-0 right-0 z-50 px-4 py-3 ${
-          isScrolled || mobileMenuOpen ? 'bg-white/95 backdrop-blur-md shadow-sm' : 'bg-transparent'
+          isScrolled || mobileMenuOpen ? 'bg-white/95 backdrop-blur-md shadow-sm' : isProfilePage ? 'bg-[rgb(24_24_27)] bg-opacity-90' : 'bg-transparent'
         } transition-colors duration-300 ${
           isInitialLoad ? 'hidden' : 'block'
         }`}

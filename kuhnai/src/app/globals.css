@@ -22,7 +22,7 @@
     --destructive-foreground: 0 0% 98%;
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --ring: 175 47% 32%;         /* Matching primary */
+    --ring: 175 47% 32%;
     --radius: 0.5rem;
   }
 
@@ -33,7 +33,7 @@
     --card-foreground: 0 0% 98%;
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 175 47% 32%;      /* Keeping teal for dark mode */
+    --primary: 175 47% 32%;
     --primary-foreground: 0 0% 98%;
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
@@ -58,7 +58,6 @@
   }
 }
 
-/* Custom styles to match Perplexity */
 @layer utilities {
   .bg-kuhn-teal {
     background-color: #2A6B74;
